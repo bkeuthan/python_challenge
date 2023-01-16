@@ -5,71 +5,71 @@ import os
 import csv
 
 # Creating an object out of the CSV file
-budget_data = os.path.join("Resources/budget_data.csv")
+election_data = os.path.join("Resources/election_data.csv")
 
 # defining variable type
-count = 0
-total_profit_loss = 0
-month = []
-profit_loss = []
+candidate_list = []
+candidate_votes = []
+percent_votes = []
 
 # Reading CSV file, data seperated by commas
-with open(budget_data, "r") as csvfile:
+with open(election_data, "r") as csvfile:
     csvreader = csv.reader(csvfile, delimiter = ",")
     header = next(csvreader)
-    
+
     # loop through all data
     for row in csvreader:
 
-        month.append(row[0])
+        # If statement to count by individual candidate
+        if row[2] not in candidate_list:
+            candidate_list.append(row[2])
+            candidate_index = candidate_list.index(row[2])
+            candidate_votes.append(1)
+        else:
+            candidate_index = candidate_list.index(row[2])
+            candidate_votes.append(1)
+            candidate_votes[candidate_index] += 1
 
-        # Calc of monthly profit/loss change
-        monthly_change = int(row[1]) - count
-        profit_loss.append(monthly_change)
-        count = int(row[1])
+    # Total Votes
+    total_votes = len(candidate_votes)
 
-        # Total Profit Loss through loop
-        total_profit_loss = total_profit_loss + count
+    # Calc for percentage votes
+    for n in range(len(candidate_list)):
+        percentage = (candidate_votes[n]/total_votes) * 100
+        percentage2 = (f" {str(round(percentage, 3))}%")
+        percent_votes.append(percentage2)
 
-# Total Months
-total_months = len(month)
+    # Calc for winner
+    winner = max(candidate_votes)
+    winner_index = candidate_votes.index(winner)
+    winning_candidate = candidate_list[winner_index]
 
-# Average change
-avg_change = -8311.11
+#Print Python Data
+print("Election Results")
+print("----------------")
+print(f"Total Votes: {(total_votes)}")
+print("----------------")
+for n in range(len(candidate_list)):
+    print(f"{str(candidate_list[n])}: {str(percent_votes[n])} ({str(candidate_votes[n])})")
+print("----------------")
+print(f"Winner: {winning_candidate}")
+print("----------------")
 
-# Greatest increase
-greatest_increase = max(profit_loss)
-greatest_index = profit_loss.index(greatest_increase)
-greatest_month = month[greatest_index]
-
-# Greatest decrease
-least_increase = min(profit_loss)
-lease_index = profit_loss.index(least_increase)
-least_month = month[lease_index]
-    
-# Print Python Results
-print("Financial Analysis")
-print("------------------")
-print(f"Total Months: {total_months}")
-print(f"Total: ${total_profit_loss}")
-print(f"Average Change: ${round(avg_change,2)}")
-print(f"Greatest Increase in Profits: {greatest_month} (${greatest_increase})")
-print(f"Greatest Decrease in Profits: {least_month} (${least_increase})")
-
-# Create Text File
+# Exporting to .txt file
 text = open("output.txt", "w")
-
-# Write txt file Results
-text.write("Financial Analysis")
 text.write("\n")
-text.write("------------------")
+text.write("Election Results")
 text.write("\n")
-text.write(f"Total Months: {total_months}")
+text.write("----------------")
 text.write("\n")
-text.write(f"Total: ${total_profit_loss}")
+text.write(f"Total Votes: {(total_votes)}")
 text.write("\n")
-text.write(f"Average Change: ${round(avg_change,2)}")
+text.write("----------------")
 text.write("\n")
-text.write(f"Greatest Increase in Profits: {greatest_month} (${greatest_increase})")
+for i in range(len(candidate_list)):
+    text.write((f"{str(candidate_list[i])}: {str(percent_votes[i])} ({str(candidate_votes[i])}) \n"))
+text.write("----------------")
 text.write("\n")
-text.write(f"Greatest Decrease in Profits: {least_month} (${least_increase})")
+text.write(f"Winner: {winning_candidate}")
+text.write("\n")
+text.write("----------------")
